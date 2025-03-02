@@ -68,7 +68,6 @@ func (s *userService) UpdateUser(id uint, request dto.UpdateUserRequest, file *m
 		return nil, errors.New("user not found")
 	}
 
-	// ✅ Update hanya field yang dikirim dalam request
 	if request.FullName != "" {
 		user.FullName = request.FullName
 	}
@@ -76,7 +75,6 @@ func (s *userService) UpdateUser(id uint, request dto.UpdateUserRequest, file *m
 		user.Phone = request.Phone
 	}
 
-	// ✅ Upload foto ke Cloudinary jika ada file yang dikirim
 	if file != nil {
 		src, err := file.Open()
 		if err != nil {

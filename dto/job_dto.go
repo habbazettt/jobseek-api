@@ -9,7 +9,7 @@ type JobRequest struct {
 	Location        string    `json:"location" binding:"required"`
 	Salary          int64     `json:"salary" binding:"required,min=0"`
 	Currency        string    `json:"currency" binding:"required,oneof=IDR USD EUR"`
-	JobType         string    `json:"job_type" binding:"required,oneof=full-time part-time freelance"`
+	JobType         string    `json:"job_type" binding:"required,oneof=full-time part-time freelance internship"`
 	Category        string    `json:"category" binding:"required"`
 	ExperienceLevel string    `json:"experience_level" binding:"required,oneof=junior mid senior"`
 	Skills          []string  `json:"skills" binding:"required"`

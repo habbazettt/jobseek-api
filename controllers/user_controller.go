@@ -69,16 +69,18 @@ func (c *UserController) UpdateUser(ctx *gin.Context) {
 		return
 	}
 
-	// ✅ Ambil file dari form-data jika ada
-	file, _ := ctx.FormFile("photo")
-
-	// Pastikan user hanya bisa update akun sendiri kecuali admin
+	// ✅ Ambil user_id & role dari token
 	userID, _ := ctx.Get("user_id")
 	role, _ := ctx.Get("role")
+
+	// ✅ Hanya pemilik akun atau admin yang bisa update
 	if userID.(uint) != uint(id) && role.(string) != "admin" {
 		utils.ErrorResponse(ctx, http.StatusForbidden, "Unauthorized to update this user")
 		return
 	}
+
+	// ✅ Ambil file dari form-data jika ada
+	file, _ := ctx.FormFile("photo")
 
 	user, err := c.userService.UpdateUser(uint(id), request, file)
 	if err != nil {
@@ -97,9 +99,11 @@ func (c *UserController) DeleteUser(ctx *gin.Context) {
 		return
 	}
 
-	// Pastikan user hanya bisa menghapus akun sendiri kecuali admin
+	// ✅ Ambil user_id & role dari token
 	userID, _ := ctx.Get("user_id")
 	role, _ := ctx.Get("role")
+
+	// ✅ Hanya pemilik akun atau admin yang bisa delete
 	if userID.(uint) != uint(id) && role.(string) != "admin" {
 		utils.ErrorResponse(ctx, http.StatusForbidden, "Unauthorized to delete this user")
 		return
