@@ -68,6 +68,7 @@ func RegisterUser(c *gin.Context) {
 		Email:    request.Email,
 		Password: hashedPassword,
 		Role:     request.Role,
+		Phone:    request.Phone,
 	}
 
 	// Simpan user ke database

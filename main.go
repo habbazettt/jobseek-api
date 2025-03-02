@@ -10,14 +10,15 @@ import (
 )
 
 func main() {
-	db := config.ConnectDB() // ✅ Sekarang `db` memiliki nilai
+	db := config.ConnectDB()
 
 	config.SetupCloudinary()
 
 	r := gin.Default()
 
 	routes.AuthRoutes(r)
-	routes.JobRoutes(r, db) // ✅ Pastikan `db` dikirim ke routes
+	routes.JobRoutes(r, db)
+	routes.UserRoutes(r, db)
 
 	port := "8080"
 	fmt.Println("Server running on port " + port)
