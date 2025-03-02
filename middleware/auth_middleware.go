@@ -9,36 +9,32 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-// AuthMiddleware untuk memproteksi route dengan JWT
 func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// Ambil token dari header Authorization
 		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" {
 			c.JSON(http.StatusUnauthorized, gin.H{
 				"status":  "error",
-				"message": "Authorization header is missing",
+				"message": "Authorization token required",
+				"data":    nil,
 			})
 			c.Abort()
 			return
 		}
 
-		// Pastikan token menggunakan format "Bearer <token>"
-		tokenParts := strings.Split(authHeader, " ")
-		if len(tokenParts) != 2 || tokenParts[0] != "Bearer" {
+		// Ambil token dari format "Bearer <token>"
+		tokenString := strings.Split(authHeader, " ")
+		if len(tokenString) != 2 || tokenString[0] != "Bearer" {
 			c.JSON(http.StatusUnauthorized, gin.H{
 				"status":  "error",
 				"message": "Invalid token format",
+				"data":    nil,
 			})
 			c.Abort()
 			return
 		}
 
-		tokenString := tokenParts[1]
-
-		// Parse token
-		claims := jwt.MapClaims{}
-		token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
+		token, err := jwt.Parse(tokenString[1], func(token *jwt.Token) (interface{}, error) {
 			return []byte(os.Getenv("JWT_SECRET")), nil
 		})
 
@@ -46,15 +42,27 @@ func AuthMiddleware() gin.HandlerFunc {
 			c.JSON(http.StatusUnauthorized, gin.H{
 				"status":  "error",
 				"message": "Invalid or expired token",
+				"data":    nil,
 			})
 			c.Abort()
 			return
 		}
 
-		// Simpan data user dari token ke context
-		c.Set("user_id", claims["user_id"])
-		c.Set("email", claims["email"])
-		c.Set("role", claims["role"])
+		claims, ok := token.Claims.(jwt.MapClaims)
+		if !ok {
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"status":  "error",
+				"message": "Invalid token claims",
+				"data":    nil,
+			})
+			c.Abort()
+			return
+		}
+
+		// Simpan user_id dan role dari token ke context
+		c.Set("user_id", uint(claims["user_id"].(float64)))
+		c.Set("email", claims["email"].(string))
+		c.Set("role", claims["role"].(string))
 
 		c.Next()
 	}
