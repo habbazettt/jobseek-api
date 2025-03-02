@@ -12,6 +12,8 @@ import (
 func main() {
 	config.ConnectDB()
 
+	config.SetupCloudinary()
+
 	r := gin.Default()
 
 	routes.AuthRoutes(r)
