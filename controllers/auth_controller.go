@@ -13,23 +13,6 @@ import (
 	"github.com/habbazettt/jobseek-go/utils"
 )
 
-// UserProfile menampilkan informasi user yang sedang login
-func UserProfile(c *gin.Context) {
-	userID, _ := c.Get("user_id")
-	email, _ := c.Get("email")
-	role, _ := c.Get("role")
-
-	c.JSON(http.StatusOK, gin.H{
-		"status":  "success",
-		"message": "User profile retrieved successfully",
-		"data": gin.H{
-			"user_id": userID,
-			"email":   email,
-			"role":    role,
-		},
-	})
-}
-
 // RegisterUser menangani pendaftaran user baru
 func RegisterUser(c *gin.Context) {
 	var request dto.RegisterRequest
@@ -68,6 +51,7 @@ func RegisterUser(c *gin.Context) {
 		Email:    request.Email,
 		Password: hashedPassword,
 		Role:     request.Role,
+		Phone:    request.Phone,
 	}
 
 	// Simpan user ke database

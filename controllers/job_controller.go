@@ -92,7 +92,7 @@ func (c *JobController) UpdateJob(ctx *gin.Context) {
 		return
 	}
 
-	var request dto.JobRequest
+	var request dto.UpdateJobRequest
 	if err := ctx.ShouldBindJSON(&request); err != nil {
 		utils.ErrorResponse(ctx, http.StatusBadRequest, err.Error())
 		return

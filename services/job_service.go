@@ -12,7 +12,7 @@ type JobService interface {
 	CreateJob(request dto.JobRequest, companyID uint) (*dto.JobResponse, error)
 	GetJobs(filters dto.JobFilterRequest) (map[string]interface{}, error)
 	GetJobByID(id uint) (*dto.JobResponse, error)
-	UpdateJob(id uint, request dto.JobRequest, companyID uint) (*dto.JobResponse, error)
+	UpdateJob(id uint, request dto.UpdateJobRequest, companyID uint) (*dto.JobResponse, error)
 	DeleteJob(id uint, companyID uint, userRole string) error
 }
 
@@ -129,27 +129,48 @@ func (s *jobService) GetJobByID(id uint) (*dto.JobResponse, error) {
 }
 
 // ✅ UpdateJob - Perusahaan hanya bisa mengupdate pekerjaannya sendiri
-func (s *jobService) UpdateJob(id uint, request dto.JobRequest, companyID uint) (*dto.JobResponse, error) {
+func (s *jobService) UpdateJob(id uint, request dto.UpdateJobRequest, companyID uint) (*dto.JobResponse, error) {
 	job, err := s.jobRepo.GetJobByID(id)
 	if err != nil {
 		return nil, err
 	}
 
+	// ✅ Pastikan hanya pemilik job yang bisa update
 	if job.CompanyID != companyID {
 		return nil, errors.New("unauthorized: you can only update your own jobs")
 	}
 
-	// Update data pekerjaan
-	job.Title = request.Title
-	job.Description = request.Description
-	job.Location = request.Location
-	job.Salary = request.Salary
-	job.Currency = request.Currency
-	job.JobType = request.JobType
-	job.Category = request.Category
-	job.ExperienceLevel = request.ExperienceLevel
-	job.Skills = request.Skills
-	job.Deadline = request.Deadline
+	// ✅ Update hanya field yang dikirim dalam request
+	if request.Title != nil {
+		job.Title = *request.Title
+	}
+	if request.Description != nil {
+		job.Description = *request.Description
+	}
+	if request.Location != nil {
+		job.Location = *request.Location
+	}
+	if request.Salary != nil {
+		job.Salary = *request.Salary
+	}
+	if request.Currency != nil {
+		job.Currency = *request.Currency
+	}
+	if request.JobType != nil {
+		job.JobType = *request.JobType
+	}
+	if request.Category != nil {
+		job.Category = *request.Category
+	}
+	if request.ExperienceLevel != nil {
+		job.ExperienceLevel = *request.ExperienceLevel
+	}
+	if request.Skills != nil {
+		job.Skills = *request.Skills
+	}
+	if request.Deadline != nil {
+		job.Deadline = *request.Deadline
+	}
 
 	err = s.jobRepo.UpdateJob(job)
 	if err != nil {
@@ -167,10 +188,11 @@ func (s *jobService) UpdateJob(id uint, request dto.JobRequest, companyID uint) 
 		JobType:         job.JobType,
 		Category:        job.Category,
 		ExperienceLevel: job.ExperienceLevel,
-		Skills:          job.Skills, // ✅ GORM akan mengembalikan []string
+		Skills:          job.Skills,
 		Deadline:        job.Deadline,
 		Status:          job.Status,
 		CreatedAt:       job.CreatedAt,
+		UpdatedAt:       job.UpdatedAt,
 	}
 	return &response, nil
 }
