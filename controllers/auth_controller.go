@@ -128,11 +128,11 @@ func LoginUser(c *gin.Context) {
 	}
 
 	// Buat token JWT
-	expirationTime := time.Now().Add(time.Hour * 24) // Token berlaku selama 24 jam
+	expirationTime := time.Now().Add(time.Hour * 24)
 	claims := jwt.MapClaims{
 		"user_id": user.ID,
-		"email":   user.Email,
 		"role":    user.Role,
+		"email":   user.Email,
 		"exp":     expirationTime.Unix(),
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)

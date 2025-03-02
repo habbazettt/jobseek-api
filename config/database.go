@@ -13,7 +13,7 @@ import (
 
 var DB *gorm.DB
 
-func ConnectDB() {
+func ConnectDB() *gorm.DB {
 	_ = godotenv.Load()
 
 	dsn := os.Getenv("DB_URL")
@@ -30,6 +30,7 @@ func ConnectDB() {
 	// Automigrate tabel berdasarkan model yang ada
 	err = db.AutoMigrate(
 		&models.User{},
+		&models.Job{},
 	)
 
 	if err != nil {
@@ -38,4 +39,5 @@ func ConnectDB() {
 
 	DB = db
 	fmt.Println("Sukses terhubung ke database dan migrasi berhasil")
+	return db
 }
