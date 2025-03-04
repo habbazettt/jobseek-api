@@ -8,8 +8,8 @@ import (
 
 type Job struct {
 	ID              uint           `gorm:"primaryKey" json:"id"`
-	Title           string         `gorm:"type:varchar(255);not null" json:"title"`
-	Description     string         `gorm:"type:varchar(255);not null" json:"description"`
+	Title           string         `gorm:"type:varchar(255);not null;index:,class:FULLTEXT" json:"title"`
+	Description     string         `gorm:"type:varchar(255);not null;index:,class:FULLTEXT" json:"description"`
 	CompanyID       uint           `gorm:"not null" json:"company_id"`
 	Location        string         `gorm:"type:varchar(100);not null" json:"location"`
 	Salary          int64          `gorm:"not null" json:"salary"`

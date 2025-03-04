@@ -31,8 +31,6 @@ func main() {
 	routes.AuthRoutes(r)
 	routes.JobRoutes(r, db)
 	routes.UserRoutes(r, db)
-	routes.JobRoutes(r, db)
-	routes.UserRoutes(r, db)
 	routes.ChatRoutes(r, chatController)
 	routes.NotificationRoutes(r, notificationController)
 

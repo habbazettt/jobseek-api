@@ -35,6 +35,9 @@ func (r *jobRepository) GetJobs(filters dto.JobFilterRequest) ([]models.Job, int
 	query := r.db.Model(&models.Job{})
 
 	// 🔍 Gunakan LIKE agar pencarian lebih fleksibel
+	if filters.SearchQuery != "" {
+		query = query.Where("(title LIKE ? OR description LIKE ?)", "%"+filters.SearchQuery+"%", "%"+filters.SearchQuery+"%")
+	}
 	if filters.Category != "" {
 		query = query.Where("category LIKE ?", "%"+filters.Category+"%")
 	}
@@ -44,8 +47,13 @@ func (r *jobRepository) GetJobs(filters dto.JobFilterRequest) ([]models.Job, int
 	if filters.ExperienceLevel != "" {
 		query = query.Where("experience_level = ?", filters.ExperienceLevel)
 	}
+	if filters.MinSalary > 0 {
+		query = query.Where("salary >= ?", filters.MinSalary)
+	}
+	if filters.MaxSalary > 0 {
+		query = query.Where("salary <= ?", filters.MaxSalary)
+	}
 
-	// Hitung total sebelum pagination
 	query.Count(&total)
 
 	// 📌 Pagination dengan LIMIT & OFFSET
@@ -72,5 +80,5 @@ func (r *jobRepository) UpdateJob(job *models.Job) error {
 
 // ✅ Hapus job berdasarkan ID
 func (r *jobRepository) DeleteJob(id uint) error {
-	return r.db.Delete(&models.Job{}, id).Error
+	return r.db.Model(&models.Job{}).Where("id = ?", id).Update("deleted_at", gorm.Expr("NOW()")).Error
 }
