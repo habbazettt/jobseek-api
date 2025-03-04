@@ -31,6 +31,8 @@ func ConnectDB() *gorm.DB {
 	err = db.AutoMigrate(
 		&models.User{},
 		&models.Job{},
+		&models.ChatMessage{},
+		&models.Notification{},
 	)
 
 	if err != nil {
