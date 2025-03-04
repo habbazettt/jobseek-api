@@ -67,7 +67,15 @@ func (s *jobService) CreateJob(request dto.JobRequest, companyID uint) (*dto.Job
 
 // ✅ GetJobs - Ambil semua pekerjaan
 func (s *jobService) GetJobs(filters dto.JobFilterRequest) (map[string]interface{}, error) {
-	jobs, total, err := s.jobRepo.GetJobs(filters) // ✅ Tambahkan parameter `filters`
+	// 🛠 Default value jika user tidak mengisi pagination
+	if filters.Page <= 0 {
+		filters.Page = 1
+	}
+	if filters.Limit <= 0 {
+		filters.Limit = 10
+	}
+
+	jobs, total, err := s.jobRepo.GetJobs(filters)
 	if err != nil {
 		return nil, err
 	}
@@ -92,14 +100,12 @@ func (s *jobService) GetJobs(filters dto.JobFilterRequest) (map[string]interface
 		})
 	}
 
-	// 🔄 Format response dengan pagination
-	response := map[string]interface{}{
+	return map[string]interface{}{
 		"total":   total,
 		"page":    filters.Page,
 		"limit":   filters.Limit,
 		"results": jobResponses,
-	}
-	return response, nil
+	}, nil
 }
 
 // ✅ GetJobByID - Ambil pekerjaan berdasarkan ID
@@ -170,6 +176,9 @@ func (s *jobService) UpdateJob(id uint, request dto.UpdateJobRequest, companyID 
 	}
 	if request.Deadline != nil {
 		job.Deadline = *request.Deadline
+	}
+	if request.Status != nil {
+		job.Status = *request.Status
 	}
 
 	err = s.jobRepo.UpdateJob(job)
