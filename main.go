@@ -12,6 +12,8 @@ import (
 	"github.com/habbazettt/jobseek-go/services"
 )
 
+
+
 func main() {
 	db := config.ConnectDB()
 
@@ -35,12 +37,17 @@ func main() {
 	proposalService := services.NewProposalService(proposalRepo, jobRepo, userRepo)
 	proposalController := controllers.NewProposalController(proposalService)
 
+	reviewRepo := repositories.NewReviewRepository(db)
+	reviewService := services.NewReviewService(reviewRepo)
+	reviewController := controllers.NewReviewController(reviewService)
+
 	routes.AuthRoutes(r)
 	routes.JobRoutes(r, db)
 	routes.UserRoutes(r, db)
 	routes.ChatRoutes(r, chatController)
 	routes.NotificationRoutes(r, notificationController)
 	routes.ProposalRoutes(r, proposalController)
+	routes.ReviewRoutes(r, reviewController)
 
 	port := "8080"
 	fmt.Println("Server running on port " + port)
