@@ -28,11 +28,19 @@ func main() {
 
 	chatController := controllers.NewChatController(chatService, notificationService)
 
+	proposalRepo := repositories.NewProposalRepository(db)
+	jobRepo := repositories.NewJobRepository(db)
+	userRepo := repositories.NewUserRepository(db)
+
+	proposalService := services.NewProposalService(proposalRepo, jobRepo, userRepo)
+	proposalController := controllers.NewProposalController(proposalService)
+
 	routes.AuthRoutes(r)
 	routes.JobRoutes(r, db)
 	routes.UserRoutes(r, db)
 	routes.ChatRoutes(r, chatController)
 	routes.NotificationRoutes(r, notificationController)
+	routes.ProposalRoutes(r, proposalController)
 
 	port := "8080"
 	fmt.Println("Server running on port " + port)
