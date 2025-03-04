@@ -33,6 +33,7 @@ func ConnectDB() *gorm.DB {
 		&models.Job{},
 		&models.ChatMessage{},
 		&models.Notification{},
+		&models.Proposal{},
 	)
 
 	if err != nil {
