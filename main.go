@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/habbazettt/jobseek-go/config"
 	"github.com/habbazettt/jobseek-go/controllers"
-	_ "github.com/habbazettt/jobseek-go/docs"
+	_ "github.com/habbazettt/jobseek-go/docs" // Sesuaikan dengan path docs
 	"github.com/habbazettt/jobseek-go/repositories"
 	"github.com/habbazettt/jobseek-go/routes"
 	"github.com/habbazettt/jobseek-go/services"

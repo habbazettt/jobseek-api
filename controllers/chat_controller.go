@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/habbazettt/jobseek-go/dto"
 	"github.com/habbazettt/jobseek-go/services"
 	"github.com/habbazettt/jobseek-go/utils"
 )
@@ -18,40 +19,43 @@ func NewChatController(chatService services.ChatService, notificationService ser
 	return &ChatController{chatService, notificationService}
 }
 
-// ✅ Kirim pesan
+// @Summary     Send Message
+// @Description Send a message to another user
+// @Tags        chat
+// @Accept      json
+// @Produce     json
+// @Param       body  body      dto.MessageRequest  true  "Message request"
+// @Security    BearerAuth
+// @Success     200   {object}  models.ChatMessage
+// @Failure     400   {object}  map[string]interface{}
+// @Failure     401   {object}  map[string]interface{}
+// @Failure     500   {object}  map[string]interface{}
+// @Router      /chat/send_message [post]
 func (c *ChatController) SendMessage(ctx *gin.Context) {
-	var request struct {
-		ReceiverID uint   `json:"receiver_id" binding:"required"`
-		Message    string `json:"message" binding:"required"`
-	}
-
+	var request dto.MessageRequest
 	if err := ctx.ShouldBindJSON(&request); err != nil {
 		utils.ErrorResponse(ctx, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	// ✅ Ambil sender_id dari token JWT
 	senderID, exists := ctx.Get("user_id")
 	if !exists {
 		utils.ErrorResponse(ctx, http.StatusUnauthorized, "Unauthorized: No user ID found in token")
 		return
 	}
 
-	// ✅ Ambil informasi user (full_name) berdasarkan sender_id
 	sender, err := c.chatService.GetUserByID(senderID.(uint))
 	if err != nil {
 		utils.ErrorResponse(ctx, http.StatusInternalServerError, "Failed to retrieve sender details")
 		return
 	}
 
-	// ✅ Kirim pesan
 	chat, err := c.chatService.SendMessage(senderID.(uint), request.ReceiverID, request.Message)
 	if err != nil {
 		utils.ErrorResponse(ctx, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	// ✅ Notifikasi dengan full_name pengirim
 	notificationMessage := "Anda menerima pesan baru dari " + sender.FullName
 	_, err = c.notificationService.CreateNotification(request.ReceiverID, notificationMessage)
 	if err != nil {
@@ -62,7 +66,19 @@ func (c *ChatController) SendMessage(ctx *gin.Context) {
 	utils.SuccessResponse(ctx, http.StatusOK, "Message sent successfully", chat)
 }
 
-// ✅ Ambil pesan berdasarkan filter sender_id dan receiver_id (atau semua pesan jika tidak ada filter)
+// @Summary     Get Messages
+// @Description Get messages by sender and receiver
+// @Tags        chat
+// @Accept      json
+// @Produce     json
+// @Param       sender_id  query     uint    false  "Sender ID"
+// @Param       receiver_id  query     uint    false  "Receiver ID"
+// @Security    BearerAuth
+// @Success     200   {object}  []models.ChatMessage
+// @Failure     400   {object}  map[string]interface{}
+// @Failure     401   {object}  map[string]interface{}
+// @Failure     500   {object}  map[string]interface{}
+// @Router      /chat/messages [get]
 func (c *ChatController) GetMessages(ctx *gin.Context) {
 	var senderID, receiverID *uint
 
@@ -94,7 +110,18 @@ func (c *ChatController) GetMessages(ctx *gin.Context) {
 	utils.SuccessResponse(ctx, http.StatusOK, "Messages retrieved successfully", messages)
 }
 
-// ✅ Ambil semua pesan dari user yang sedang login
+
+// @Summary     Get My Messages
+// @Description Get messages of current user
+// @Tags        chat
+// @Accept      json
+// @Produce     json
+// @Security    BearerAuth
+// @Success     200   {object}  []models.ChatMessage
+// @Failure     400   {object}  map[string]interface{}
+// @Failure     401   {object}  map[string]interface{}
+// @Failure     500   {object}  map[string]interface{}
+// @Router      /chat/my-messages [get]
 func (c *ChatController) GetMyMessages(ctx *gin.Context) {
 	userID, exists := ctx.Get("user_id")
 	if !exists {
