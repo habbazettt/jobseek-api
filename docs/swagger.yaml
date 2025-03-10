@@ -1,3 +1,4 @@
+basePath: /api/v1
 definitions:
   dto.JobRequest:
     properties:
@@ -192,8 +193,12 @@ definitions:
       updated_at:
         type: string
     type: object
+host: localhost:8080
 info:
   contact: {}
+  description: API untuk manajemen jobseeker
+  title: Jobseeker Management API
+  version: "1.0"
 paths:
   /auth/login:
     post:
@@ -646,4 +651,10 @@ paths:
       summary: Get Current User
       tags:
       - users
+securityDefinitions:
+  BearerAuth:
+    description: Masukkan token dalam format "Bearer <token>"
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

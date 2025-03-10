@@ -1,8 +1,13 @@
 {
     "swagger": "2.0",
     "info": {
-        "contact": {}
+        "description": "API untuk manajemen jobseeker",
+        "title": "Jobseeker Management API",
+        "contact": {},
+        "version": "1.0"
     },
+    "host": "localhost:8080",
+    "basePath": "/api/v1",
     "paths": {
         "/auth/login": {
             "post": {
@@ -959,6 +964,14 @@
                     "type": "string"
                 }
             }
+        }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "description": "Masukkan token dalam format \"Bearer \u003ctoken\u003e\"",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }

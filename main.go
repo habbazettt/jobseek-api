@@ -15,6 +15,15 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
+// @title Jobseeker Management API
+// @version 1.0
+// @description API untuk manajemen jobseeker
+// @host localhost:8080
+// @BasePath /api/v1
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
+// @description Masukkan token dalam format "Bearer <token>"
 func main() {
 	db := config.ConnectDB()
 	config.SetupCloudinary()
