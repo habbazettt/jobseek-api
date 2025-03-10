@@ -18,16 +18,13 @@ func NewJobController(jobService services.JobService) *JobController {
 	return &JobController{jobService}
 }
 
-// CreateJob - Tambahkan pekerjaan baru
-//
-// Hanya perusahaan yang bisa menambahkan pekerjaan.
-//
-// @Summary Tambahkan pekerjaan baru
-// @Description Tambahkan pekerjaan baru
+// @Summary Create a new job
+// @Description Create a new job
 // @Tags jobs
 // @Accept  json
 // @Produce  json
 // @Param   body  body      dto.JobRequest  true  "Job request"
+// @Security BearerAuth
 // @Success 201 {object} dto.JobResponse
 // @Failure 400 {object} map[string]interface{}
 // @Failure 401 {object} map[string]interface{}
