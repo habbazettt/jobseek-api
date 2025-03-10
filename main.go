@@ -21,7 +21,7 @@ import (
 // @description     API untuk manajemen pencari kerja dan lowongan pekerjaan.
 // @host      localhost:8080
 // @BasePath  /api/v1
-// @securityDefinitions.apikey BearerAuth
+// @SecurityDefinitions.apikey BearerAuth
 // @in header
 // @name Authorization
 // @description Masukkan token dalam format "Bearer <token>"

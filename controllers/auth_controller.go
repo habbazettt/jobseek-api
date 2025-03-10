@@ -13,7 +13,16 @@ import (
 	"github.com/habbazettt/jobseek-go/utils"
 )
 
-// RegisterUser menangani pendaftaran user baru
+// @Summary Register new user
+// @Description Register new user, only available for guest
+// @Tags auth
+// @Accept  json
+// @Produce  json
+// @Param request body dto.RegisterRequest true "Register request"
+// @Success 201 {object} dto.UserResponse
+// @Failure 400 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /auth/register [post]
 func RegisterUser(c *gin.Context) {
 	var request dto.RegisterRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
@@ -25,7 +34,6 @@ func RegisterUser(c *gin.Context) {
 		return
 	}
 
-	// Validasi tambahan menggunakan validator dari utils
 	if err := utils.ValidateStruct(request); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"status":  "error",
@@ -35,7 +43,6 @@ func RegisterUser(c *gin.Context) {
 		return
 	}
 
-	// Hash password sebelum disimpan
 	hashedPassword, err := utils.HashPassword(request.Password)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -45,7 +52,6 @@ func RegisterUser(c *gin.Context) {
 		return
 	}
 
-	// Buat user baru
 	user := models.User{
 		FullName: request.FullName,
 		Email:    request.Email,
@@ -54,7 +60,6 @@ func RegisterUser(c *gin.Context) {
 		Phone:    request.Phone,
 	}
 
-	// Simpan user ke database
 	if err := config.DB.Create(&user).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status":  "error",
@@ -63,7 +68,6 @@ func RegisterUser(c *gin.Context) {
 		return
 	}
 
-	// Response
 	response := dto.UserResponse{
 		ID:        user.ID,
 		FullName:  user.FullName,
@@ -81,7 +85,17 @@ func RegisterUser(c *gin.Context) {
 	})
 }
 
-// LoginUser menangani autentikasi user
+// @Summary Login user
+// @Description Login user, only available for guest
+// @Tags auth
+// @Accept  json
+// @Produce  json
+// @Param request body dto.LoginRequest true "Login request"
+// @Success 200 {object} dto.LoginResponse
+// @Failure 400 {object} map[string]interface{}
+// @Failure 401 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /auth/login [post]
 func LoginUser(c *gin.Context) {
 	var request dto.LoginRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
@@ -102,7 +116,6 @@ func LoginUser(c *gin.Context) {
 		return
 	}
 
-	// Verifikasi password
 	if !utils.CheckPassword(request.Password, user.Password) {
 		c.JSON(http.StatusUnauthorized, gin.H{
 			"status":  "error",
@@ -111,8 +124,7 @@ func LoginUser(c *gin.Context) {
 		return
 	}
 
-	// Buat token JWT
-	expirationTime := time.Now().Add(time.Hour * 24)
+	expirationTime := time.Now().Add(time.Hour * 24) // 24 hours
 	claims := jwt.MapClaims{
 		"user_id": user.ID,
 		"role":    user.Role,
@@ -129,7 +141,6 @@ func LoginUser(c *gin.Context) {
 		return
 	}
 
-	// Buat response user
 	response := dto.UserResponse{
 		ID:        user.ID,
 		FullName:  user.FullName,
@@ -140,7 +151,6 @@ func LoginUser(c *gin.Context) {
 		CreatedAt: user.CreatedAt,
 	}
 
-	// Response login dengan LoginResponse DTO
 	loginResponse := dto.LoginResponse{
 		Status:  "success",
 		Message: "Login successful",

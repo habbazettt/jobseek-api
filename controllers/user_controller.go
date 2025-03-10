@@ -18,7 +18,15 @@ func NewUserController(userService services.UserService) *UserController {
 	return &UserController{userService}
 }
 
-// ✅ Get All Users (Hanya Admin)
+// @Summary      Get All Users
+// @Description  Get All Users
+// @Tags         users
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Success      200  {array}   dto.UserResponse
+// @Failure      500  {object}  map[string]interface{}
+// @Router       /users [get]
 func (c *UserController) GetAllUsers(ctx *gin.Context) {
 	users, err := c.userService.GetAllUsers()
 	if err != nil {
@@ -28,7 +36,15 @@ func (c *UserController) GetAllUsers(ctx *gin.Context) {
 	utils.SuccessResponse(ctx, http.StatusOK, "Users retrieved successfully", users)
 }
 
-// ✅ Get Current User
+// @Summary      Get Current User
+// @Description  Get Current User
+// @Tags         users
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Success      200  {object}  dto.UserResponse
+// @Failure      404  {object}  map[string]interface{}
+// @Router       /users/me [get]
 func (c *UserController) GetCurrentUser(ctx *gin.Context) {
 	userID, _ := ctx.Get("user_id")
 	user, err := c.userService.GetUserByID(userID.(uint))
@@ -39,7 +55,17 @@ func (c *UserController) GetCurrentUser(ctx *gin.Context) {
 	utils.SuccessResponse(ctx, http.StatusOK, "User retrieved successfully", user)
 }
 
-// ✅ Get User by ID (Hanya Admin)
+// @Summary      Get User By ID
+// @Description  Get User By ID
+// @Tags         users
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        id   path      int  true  "User ID"
+// @Success      200  {object}  dto.UserResponse
+// @Failure      400  {object}  map[string]interface{}
+// @Failure      404  {object}  map[string]interface{}
+// @Router       /users/{id} [get]
 func (c *UserController) GetUserByID(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
@@ -55,7 +81,23 @@ func (c *UserController) GetUserByID(ctx *gin.Context) {
 	utils.SuccessResponse(ctx, http.StatusOK, "User retrieved successfully", user)
 }
 
-// ✅ Update User
+// @Summary      Update User
+// @Description  Update user details based on the provided user ID. Only the account owner or an admin
+//
+//	can perform this update. Accepts a JSON payload for user details and optionally a
+//	file upload for updating the user's avatar.
+//
+// @Tags         users
+// @Accept       json
+// @Produce      json
+// @Param        id   path      int  true  "User ID"
+// @Param        photo formData file false "User Avatar"
+// @Security     BearerAuth
+// @Success      200  {object}  dto.UserResponse
+// @Failure      400  {object}  map[string]interface{}
+// @Failure      403  {object}  map[string]interface{}
+// @Failure      500  {object}  map[string]interface{}
+// @Router       /users/{id} [put]
 func (c *UserController) UpdateUser(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
@@ -69,17 +111,14 @@ func (c *UserController) UpdateUser(ctx *gin.Context) {
 		return
 	}
 
-	// ✅ Ambil user_id & role dari token
 	userID, _ := ctx.Get("user_id")
 	role, _ := ctx.Get("role")
 
-	// ✅ Hanya pemilik akun atau admin yang bisa update
 	if userID.(uint) != uint(id) && role.(string) != "admin" {
 		utils.ErrorResponse(ctx, http.StatusForbidden, "Unauthorized to update this user")
 		return
 	}
 
-	// ✅ Ambil file dari form-data jika ada
 	file, _ := ctx.FormFile("photo")
 
 	user, err := c.userService.UpdateUser(uint(id), request, file)
@@ -91,7 +130,22 @@ func (c *UserController) UpdateUser(ctx *gin.Context) {
 	utils.SuccessResponse(ctx, http.StatusOK, "User updated successfully", user)
 }
 
-// ✅ Delete User
+// @Summary      Delete User
+// @Description  Delete a user based on the provided user ID. Only the account owner or an admin
+//
+//	can perform this deletion. The function verifies the user identity and role
+//	from the token to ensure authorization.
+//
+// @Tags         users
+// @Accept       json
+// @Produce      json
+// @Param        id   path      int  true  "User ID"
+// @Security     BearerAuth
+// @Success      200  {object}  map[string]interface{}
+// @Failure      400  {object}  map[string]interface{}
+// @Failure      403  {object}  map[string]interface{}
+// @Failure      500  {object}  map[string]interface{}
+// @Router       /users/{id} [delete]
 func (c *UserController) DeleteUser(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
@@ -99,11 +153,9 @@ func (c *UserController) DeleteUser(ctx *gin.Context) {
 		return
 	}
 
-	// ✅ Ambil user_id & role dari token
 	userID, _ := ctx.Get("user_id")
 	role, _ := ctx.Get("role")
 
-	// ✅ Hanya pemilik akun atau admin yang bisa delete
 	if userID.(uint) != uint(id) && role.(string) != "admin" {
 		utils.ErrorResponse(ctx, http.StatusForbidden, "Unauthorized to delete this user")
 		return

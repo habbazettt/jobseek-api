@@ -18,7 +18,22 @@ func NewJobController(jobService services.JobService) *JobController {
 	return &JobController{jobService}
 }
 
-// ✅ CreateJob - Menambahkan pekerjaan
+// CreateJob - Tambahkan pekerjaan baru
+//
+// Hanya perusahaan yang bisa menambahkan pekerjaan.
+//
+// @Summary Tambahkan pekerjaan baru
+// @Description Tambahkan pekerjaan baru
+// @Tags jobs
+// @Accept  json
+// @Produce  json
+// @Param   body  body      dto.JobRequest  true  "Job request"
+// @Success 201 {object} dto.JobResponse
+// @Failure 400 {object} map[string]interface{}
+// @Failure 401 {object} map[string]interface{}
+// @Failure 403 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /jobs [post]
 func (c *JobController) CreateJob(ctx *gin.Context) {
 	var request dto.JobRequest
 	if err := ctx.ShouldBindJSON(&request); err != nil {
@@ -26,7 +41,6 @@ func (c *JobController) CreateJob(ctx *gin.Context) {
 		return
 	}
 
-	// Ambil user ID dan role dari token JWT
 	companyID, exists := ctx.Get("user_id")
 	if !exists {
 		utils.ErrorResponse(ctx, http.StatusUnauthorized, "Unauthorized")
@@ -35,7 +49,6 @@ func (c *JobController) CreateJob(ctx *gin.Context) {
 
 	userRole, _ := ctx.Get("role")
 
-	// ✅ Cek apakah user adalah perusahaan
 	if userRole != "perusahaan" {
 		utils.ErrorResponse(ctx, http.StatusForbidden, "Only companies can create jobs")
 		return
@@ -50,7 +63,24 @@ func (c *JobController) CreateJob(ctx *gin.Context) {
 	utils.SuccessResponse(ctx, http.StatusCreated, "Job created successfully", job)
 }
 
-// ✅ GetJobs - Mengambil semua pekerjaan
+// @Summary Get list of jobs
+// @Description Get list of jobs with pagination and filtering
+// @Tags jobs
+// @Accept  json
+// @Produce  json
+// @Param   page     query     int     false "Page number"
+// @Param   limit     query     int     false "Limit per page"
+// @Param   search_query     query     string     false "Search query"
+// @Param   category     query     string     false "Job category"
+// @Param   location     query     string     false "Job location"
+// @Param   experience_level     query     string     false "Job experience level"
+// @Param   min_salary     query     int     false "Minimum salary"
+// @Param   max_salary     query     int     false "Maximum salary"
+// @Security BearerAuth
+// @Success 200 {object} dto.JobResponse
+// @Failure 400 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /jobs [get]
 func (c *JobController) GetJobs(ctx *gin.Context) {
 	var filters dto.JobFilterRequest
 	if err := ctx.ShouldBindQuery(&filters); err != nil {
@@ -67,7 +97,17 @@ func (c *JobController) GetJobs(ctx *gin.Context) {
 	utils.SuccessResponse(ctx, http.StatusOK, "Jobs retrieved successfully", jobs)
 }
 
-// ✅ GetJobByID - Mengambil detail pekerjaan berdasarkan ID
+// @Summary Get Job By ID
+// @Description Get Job By ID
+// @Tags jobs
+// @Accept  json
+// @Produce  json
+// @Param   id   path      int  true  "Job ID"
+// @Security BearerAuth
+// @Success 200 {object} dto.JobResponse
+// @Failure 400 {object} map[string]interface{}
+// @Failure 404 {object} map[string]interface{}
+// @Router /jobs/{id} [get]
 func (c *JobController) GetJobByID(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
@@ -84,7 +124,22 @@ func (c *JobController) GetJobByID(ctx *gin.Context) {
 	utils.SuccessResponse(ctx, http.StatusOK, "Job retrieved successfully", job)
 }
 
-// ✅ UpdateJob - Mengupdate pekerjaan
+// @Summary Update Job
+// @Description Update job details based on the provided job ID. Only the job owner or an admin
+// can perform this update. Accepts a JSON payload for job details.
+//
+// @Tags jobs
+// @Accept  json
+// @Produce  json
+// @Param   id   path      int  true  "Job ID"
+// @Param   body  body      dto.UpdateJobRequest  true  "Job request"
+// @Security BearerAuth
+// @Success 200 {object} dto.JobResponse
+// @Failure 400 {object} map[string]interface{}
+// @Failure 401 {object} map[string]interface{}
+// @Failure 403 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /jobs/{id} [put]
 func (c *JobController) UpdateJob(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
@@ -113,7 +168,21 @@ func (c *JobController) UpdateJob(ctx *gin.Context) {
 	utils.SuccessResponse(ctx, http.StatusOK, "Job updated successfully", job)
 }
 
-// ✅ DeleteJob - Menghapus pekerjaan
+// @Summary      Delete Job
+// @Description  Delete a job based on the provided job ID. Only the job owner or an admin
+// can perform this deletion. The function verifies the user identity and role
+// from the token to ensure authorization.
+//
+// @Tags         jobs
+// @Accept       json
+// @Produce      json
+// @Param        id   path      int  true  "Job ID"
+// @Security     BearerAuth
+// @Success      200  {object}  map[string]interface{}
+// @Failure      400  {object}  map[string]interface{}
+// @Failure      403  {object}  map[string]interface{}
+// @Failure      500  {object}  map[string]interface{}
+// @Router       /jobs/{id} [delete]
 func (c *JobController) DeleteJob(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
