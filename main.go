@@ -11,20 +11,10 @@ import (
 	"github.com/habbazettt/jobseek-go/repositories"
 	"github.com/habbazettt/jobseek-go/routes"
 	"github.com/habbazettt/jobseek-go/services"
-
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
-// @title           JobSeeker API
-// @version         1.0
-// @description     API untuk manajemen pencari kerja dan lowongan pekerjaan.
-// @host      localhost:8080
-// @BasePath  /api/v1
-// @SecurityDefinitions.apikey BearerAuth
-// @in header
-// @name Authorization
-// @description Masukkan token dalam format "Bearer <token>"
 func main() {
 	db := config.ConnectDB()
 	config.SetupCloudinary()
