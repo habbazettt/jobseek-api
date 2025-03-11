@@ -35,30 +35,27 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "User logged in successfully",
                         "schema": {
                             "$ref": "#/definitions/dto.LoginResponse"
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "Invalid request",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
                         }
                     },
                     "401": {
-                        "description": "Unauthorized",
+                        "description": "Invalid email or password",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error",
+                        "description": "Failed to login user",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
                         }
                     }
                 }
@@ -90,23 +87,190 @@
                 ],
                 "responses": {
                     "201": {
-                        "description": "Created",
+                        "description": "User registered successfully",
                         "schema": {
                             "$ref": "#/definitions/dto.UserResponse"
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "Invalid request format",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error",
+                        "description": "Error saving user",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
+                        }
+                    }
+                }
+            }
+        },
+        "/chat/messages": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get messages by sender and receiver",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "chat"
+                ],
+                "summary": "Get Messages",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Sender ID",
+                        "name": "sender_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Receiver ID",
+                        "name": "receiver_id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Messages retrieved successfully",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.ChatMessage"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request body",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized: No user ID found in token",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to retrieve messages",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
+                        }
+                    }
+                }
+            }
+        },
+        "/chat/my-messages": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get messages by current user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "chat"
+                ],
+                "summary": "Get My Messages",
+                "responses": {
+                    "200": {
+                        "description": "User messages retrieved successfully",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.ChatMessage"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request body",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized: No user ID found in token",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to retrieve messages",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
+                        }
+                    }
+                }
+            }
+        },
+        "/chat/send_message": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Send a message to another user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "chat"
+                ],
+                "summary": "Send Message",
+                "parameters": [
+                    {
+                        "description": "Message request",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.MessageRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Message sent successfully",
+                        "schema": {
+                            "$ref": "#/definitions/models.ChatMessage"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request body",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized: No user ID found in token",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to send message",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
                         }
                     }
                 }
@@ -182,29 +346,32 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "Jobs retrieved successfully",
                         "schema": {
                             "$ref": "#/definitions/dto.JobResponse"
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "Invalid query parameters",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error",
+                        "description": "Failed to retrieve jobs",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
                         }
                     }
                 }
             },
             "post": {
-                "description": "Tambahkan pekerjaan baru",
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Create a new job",
                 "consumes": [
                     "application/json"
                 ],
@@ -214,7 +381,7 @@
                 "tags": [
                     "jobs"
                 ],
-                "summary": "Tambahkan pekerjaan baru",
+                "summary": "Create a new job",
                 "parameters": [
                     {
                         "description": "Job request",
@@ -228,37 +395,33 @@
                 ],
                 "responses": {
                     "201": {
-                        "description": "Created",
+                        "description": "Job created successfully",
                         "schema": {
                             "$ref": "#/definitions/dto.JobResponse"
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "Invalid request body",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
                         }
                     },
                     "403": {
-                        "description": "Forbidden",
+                        "description": "Only companies can create jobs",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error",
+                        "description": "Failed to create job",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
                         }
                     }
                 }
@@ -293,23 +456,27 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "Job retrieved successfully",
                         "schema": {
                             "$ref": "#/definitions/dto.JobResponse"
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "Invalid job ID",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
                         }
                     },
                     "404": {
-                        "description": "Not Found",
+                        "description": "Job not found",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to retrieve job",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
                         }
                     }
                 }
@@ -351,37 +518,33 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "Job updated successfully",
                         "schema": {
                             "$ref": "#/definitions/dto.JobResponse"
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "Invalid request body",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
                         }
                     },
                     "403": {
-                        "description": "Forbidden",
+                        "description": "Only companies can update jobs",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error",
+                        "description": "Failed to update job",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
                         }
                     }
                 }
@@ -414,31 +577,950 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "Job deleted successfully",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/dto.JobResponse"
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "Invalid job ID",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
                         }
                     },
                     "403": {
-                        "description": "Forbidden",
+                        "description": "Forbidden: Only companies can delete jobs",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error",
+                        "description": "Failed to delete job",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
+                        }
+                    }
+                }
+            }
+        },
+        "/notifications/delete-all": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Deletes all notifications associated with the logged-in user.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "notifications"
+                ],
+                "summary": "Delete All Notifications",
+                "responses": {
+                    "200": {
+                        "description": "All notifications deleted successfully",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Notification"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to delete all notifications",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
+                        }
+                    }
+                }
+            }
+        },
+        "/notifications/read-all": {
+            "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Marks all notifications associated with the logged-in user as read.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "notifications"
+                ],
+                "summary": "Mark All Notifications As Read",
+                "responses": {
+                    "200": {
+                        "description": "All notifications marked as read",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Notification"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to mark all notifications as read",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
+                        }
+                    }
+                }
+            }
+        },
+        "/notifications/{id}": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Deletes a notification by ID.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "notifications"
+                ],
+                "summary": "Delete Notification",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Notification ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Notification deleted successfully",
+                        "schema": {
+                            "$ref": "#/definitions/models.Notification"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid notification ID",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
+                        }
+                    },
+                    "404": {
+                        "description": "Notification not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to delete notification",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
+                        }
+                    }
+                }
+            }
+        },
+        "/proposals": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Create a new proposal for a job",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "proposals"
+                ],
+                "summary": "Create Proposal",
+                "parameters": [
+                    {
+                        "description": "Proposal data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateProposalRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Proposal submitted successfully",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ProposalResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request body",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
+                        }
+                    },
+                    "403": {
+                        "description": "Only freelancers can apply for jobs",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to submit proposal",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
+                        }
+                    }
+                }
+            }
+        },
+        "/proposals/me": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get all proposals submitted by a freelancer",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "proposals"
+                ],
+                "summary": "Get Proposals By Freelancer",
+                "responses": {
+                    "200": {
+                        "description": "Proposals retrieved successfully",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.ProposalResponse"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid user ID",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
+                        }
+                    },
+                    "403": {
+                        "description": "Only freelancers can view their proposals",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to retrieve proposals",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
+                        }
+                    }
+                }
+            }
+        },
+        "/proposals/{job_id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get all proposals for a job",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "proposals"
+                ],
+                "summary": "Get Proposals By Job ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Job ID",
+                        "name": "job_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Proposals retrieved successfully",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.ProposalResponse"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid job ID",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
+                        }
+                    },
+                    "403": {
+                        "description": "Only companies can view proposals",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to retrieve proposals",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
+                        }
+                    }
+                }
+            }
+        },
+        "/proposals/{proposal_id}": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Delete a proposal that you submitted",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "proposals"
+                ],
+                "summary": "Delete Proposal",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Proposal ID",
+                        "name": "proposal_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Proposal deleted successfully",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ProposalResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid proposal ID",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
+                        }
+                    },
+                    "403": {
+                        "description": "Only freelancers can delete their proposals",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to delete proposal",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
+                        }
+                    }
+                }
+            }
+        },
+        "/reviews": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Create a new review. Only authenticated reviewer can create a review.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "reviews"
+                ],
+                "summary": "Create a new review",
+                "parameters": [
+                    {
+                        "description": "Request body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateReviewRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Review created successfully",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ReviewResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
+                        }
+                    }
+                }
+            }
+        },
+        "/reviews/average/{user_id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Retrieve the average rating of a user.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "reviews"
+                ],
+                "summary": "Get Average Rating",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "User ID",
+                        "name": "user_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Average rating retrieved successfully",
+                        "schema": {
+                            "$ref": "#/definitions/dto.AverageRatingResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid user ID",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
+                        }
+                    }
+                }
+            }
+        },
+        "/reviews/me": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Retrieve all reviews submitted by the currently authenticated user.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "reviews"
+                ],
+                "summary": "Get My Reviews",
+                "responses": {
+                    "200": {
+                        "description": "Reviews retrieved successfully",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.ReviewResponse"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized: No user ID found in token",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
+                        }
+                    }
+                }
+            }
+        },
+        "/reviews/{review_id}": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Update an existing review. Only the reviewer who submitted the",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "reviews"
+                ],
+                "summary": "Update Review",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Review ID",
+                        "name": "review_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Review details",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateReviewRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Review updated successfully",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ReviewResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid review ID",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized: You can only update your own reviews",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Delete a review. Only the reviewer who submitted the review",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "reviews"
+                ],
+                "summary": "Delete Review",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Review ID",
+                        "name": "review_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Review deleted successfully",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ReviewResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid review ID",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized: You can only delete your own reviews",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
+                        }
+                    }
+                }
+            }
+        },
+        "/saved/freelancers": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get list of freelancers saved by the company. Only companies can perform this action.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "saved"
+                ],
+                "summary": "Get Saved Freelancers",
+                "responses": {
+                    "200": {
+                        "description": "Freelancers retrieved successfully",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.SavedFreelancerResponse"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request body",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden: Only companies can view saved freelancers",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to retrieve freelancers",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
+                        }
+                    }
+                }
+            }
+        },
+        "/saved/freelancers/{freelancer_id}": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Remove a freelancer from the company's saved freelancers. Only companies can perform this action.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "saved"
+                ],
+                "summary": "Remove Saved Freelancer",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Freelancer ID",
+                        "name": "freelancer_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Freelancer removed from saved list successfully",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SavedFreelancerResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request body",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden: Only companies can remove saved freelancers",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to remove saved freelancer",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
+                        }
+                    }
+                }
+            }
+        },
+        "/saved/jobs": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get list of jobs saved by the freelancer. Only freelancers can perform this action.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "saved"
+                ],
+                "summary": "Get Saved Jobs",
+                "responses": {
+                    "200": {
+                        "description": "Jobs retrieved successfully",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.SavedJobResponse"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request body",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden: Only freelancers can view saved jobs",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to retrieve jobs",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
+                        }
+                    }
+                }
+            }
+        },
+        "/saved/jobs/{job_id}": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Save a job to the freelancer's saved jobs. Only freelancers can perform this action.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "saved"
+                ],
+                "summary": "Save Job",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Job ID",
+                        "name": "job_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Job saved successfully",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SavedJobResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request body",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden: Only freelancers can save jobs",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to save job",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Remove a job from the freelancer's saved jobs. Only freelancers can perform this action.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "saved"
+                ],
+                "summary": "Remove Saved Job",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Job ID",
+                        "name": "job_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Job removed from saved list successfully",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SavedJobResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request body",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden: Only freelancers can remove saved jobs",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to remove saved job",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
                         }
                     }
                 }
@@ -464,7 +1546,7 @@
                 "summary": "Get All Users",
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "Users retrieved successfully",
                         "schema": {
                             "type": "array",
                             "items": {
@@ -473,10 +1555,9 @@
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error",
+                        "description": "Failed to retrieve users",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
                         }
                     }
                 }
@@ -502,16 +1583,15 @@
                 "summary": "Get Current User",
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "User retrieved successfully",
                         "schema": {
                             "$ref": "#/definitions/dto.UserResponse"
                         }
                     },
                     "404": {
-                        "description": "Not Found",
+                        "description": "User not found",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
                         }
                     }
                 }
@@ -546,23 +1626,21 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "User retrieved successfully",
                         "schema": {
                             "$ref": "#/definitions/dto.UserResponse"
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "Invalid user ID",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
                         }
                     },
                     "404": {
-                        "description": "Not Found",
+                        "description": "User not found",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
                         }
                     }
                 }
@@ -601,30 +1679,27 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "User updated successfully",
                         "schema": {
                             "$ref": "#/definitions/dto.UserResponse"
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "Invalid request body",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
                         }
                     },
                     "403": {
-                        "description": "Forbidden",
+                        "description": "Unauthorized to update this user",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error",
+                        "description": "Failed to update user",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
                         }
                     }
                 }
@@ -657,31 +1732,27 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "User deleted successfully",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/dto.UserResponse"
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "Invalid request body",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
                         }
                     },
                     "403": {
-                        "description": "Forbidden",
+                        "description": "Unauthorized to delete this user",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error",
+                        "description": "Failed to delete user",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/utils.ErrorResponseSwagger"
                         }
                     }
                 }
@@ -689,6 +1760,72 @@
         }
     },
     "definitions": {
+        "dto.AverageRatingResponse": {
+            "type": "object",
+            "properties": {
+                "average_rating": {
+                    "type": "number"
+                },
+                "reviewed_id": {
+                    "type": "integer"
+                },
+                "total_reviews": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.CreateProposalRequest": {
+            "type": "object",
+            "required": [
+                "bid_amount",
+                "cover_letter",
+                "currency",
+                "job_id"
+            ],
+            "properties": {
+                "bid_amount": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "cover_letter": {
+                    "type": "string",
+                    "minLength": 10
+                },
+                "currency": {
+                    "type": "string",
+                    "enum": [
+                        "IDR",
+                        "USD",
+                        "EUR"
+                    ]
+                },
+                "job_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.CreateReviewRequest": {
+            "type": "object",
+            "required": [
+                "comment",
+                "rating",
+                "reviewed_id"
+            ],
+            "properties": {
+                "comment": {
+                    "type": "string"
+                },
+                "rating": {
+                    "type": "number",
+                    "maximum": 5,
+                    "minimum": 1
+                },
+                "reviewed_id": {
+                    "description": "ID User yang akan diberikan review",
+                    "type": "integer"
+                }
+            }
+        },
         "dto.JobRequest": {
             "type": "object",
             "required": [
@@ -841,6 +1978,56 @@
                 }
             }
         },
+        "dto.MessageRequest": {
+            "type": "object",
+            "required": [
+                "message",
+                "receiver_id"
+            ],
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "receiver_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.ProposalResponse": {
+            "type": "object",
+            "properties": {
+                "bid_amount": {
+                    "type": "integer"
+                },
+                "cover_letter": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "currency": {
+                    "type": "string"
+                },
+                "freelancer": {
+                    "type": "string"
+                },
+                "freelancer_id": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "job_id": {
+                    "type": "integer"
+                },
+                "job_title": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.RegisterRequest": {
             "type": "object",
             "required": [
@@ -876,6 +2063,63 @@
                         "freelancer",
                         "perusahaan"
                     ]
+                }
+            }
+        },
+        "dto.ReviewResponse": {
+            "type": "object",
+            "properties": {
+                "comment": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "rating": {
+                    "type": "number"
+                },
+                "reviewed_id": {
+                    "type": "integer"
+                },
+                "reviewer_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.SavedFreelancerResponse": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "freelancer_id": {
+                    "type": "integer"
+                },
+                "full_name": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.SavedJobResponse": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "job_id": {
+                    "type": "integer"
+                },
+                "job_title": {
+                    "type": "string"
                 }
             }
         },
@@ -936,6 +2180,23 @@
                 }
             }
         },
+        "dto.UpdateReviewRequest": {
+            "type": "object",
+            "required": [
+                "comment",
+                "rating"
+            ],
+            "properties": {
+                "comment": {
+                    "type": "string"
+                },
+                "rating": {
+                    "type": "number",
+                    "maximum": 5,
+                    "minimum": 1
+                }
+            }
+        },
         "dto.UserResponse": {
             "type": "object",
             "properties": {
@@ -961,6 +2222,58 @@
                     "type": "string"
                 },
                 "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.ChatMessage": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "receiver_id": {
+                    "type": "integer"
+                },
+                "sender_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.Notification": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "is_read": {
+                    "type": "boolean"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "utils.ErrorResponseSwagger": {
+            "type": "object",
+            "properties": {
+                "data": {},
+                "message": {
+                    "type": "string"
+                },
+                "status": {
                     "type": "string"
                 }
             }
