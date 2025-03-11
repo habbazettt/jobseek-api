@@ -24,8 +24,8 @@ func NewUserController(userService services.UserService) *UserController {
 // @Accept       json
 // @Produce      json
 // @Security     BearerAuth
-// @Success      200  {array}   dto.UserResponse
-// @Failure      500  {object}  map[string]interface{}
+// @Success      200  {array}   dto.UserResponse "Users retrieved successfully"
+// @Failure      500  {object}  utils.ErrorResponseSwagger "Failed to retrieve users"
 // @Router       /users [get]
 func (c *UserController) GetAllUsers(ctx *gin.Context) {
 	users, err := c.userService.GetAllUsers()
@@ -42,8 +42,8 @@ func (c *UserController) GetAllUsers(ctx *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Security     BearerAuth
-// @Success      200  {object}  dto.UserResponse
-// @Failure      404  {object}  map[string]interface{}
+// @Success      200  {object}  dto.UserResponse "User retrieved successfully"
+// @Failure      404  {object}  utils.ErrorResponseSwagger "User not found"
 // @Router       /users/me [get]
 func (c *UserController) GetCurrentUser(ctx *gin.Context) {
 	userID, _ := ctx.Get("user_id")
@@ -62,9 +62,9 @@ func (c *UserController) GetCurrentUser(ctx *gin.Context) {
 // @Produce      json
 // @Security     BearerAuth
 // @Param        id   path      int  true  "User ID"
-// @Success      200  {object}  dto.UserResponse
-// @Failure      400  {object}  map[string]interface{}
-// @Failure      404  {object}  map[string]interface{}
+// @Success      200  {object}  dto.UserResponse "User retrieved successfully"
+// @Failure      400  {object}  utils.ErrorResponseSwagger "Invalid user ID"
+// @Failure      404  {object}  utils.ErrorResponseSwagger "User not found"
 // @Router       /users/{id} [get]
 func (c *UserController) GetUserByID(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
@@ -93,10 +93,10 @@ func (c *UserController) GetUserByID(ctx *gin.Context) {
 // @Param        id   path      int  true  "User ID"
 // @Param        photo formData file false "User Avatar"
 // @Security     BearerAuth
-// @Success      200  {object}  dto.UserResponse
-// @Failure      400  {object}  map[string]interface{}
-// @Failure      403  {object}  map[string]interface{}
-// @Failure      500  {object}  map[string]interface{}
+// @Success      200  {object}  dto.UserResponse "User updated successfully"
+// @Failure      400  {object}  utils.ErrorResponseSwagger "Invalid request body"
+// @Failure      403  {object}  utils.ErrorResponseSwagger "Unauthorized to update this user"
+// @Failure      500  {object}  utils.ErrorResponseSwagger "Failed to update user"
 // @Router       /users/{id} [put]
 func (c *UserController) UpdateUser(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
@@ -141,10 +141,10 @@ func (c *UserController) UpdateUser(ctx *gin.Context) {
 // @Produce      json
 // @Param        id   path      int  true  "User ID"
 // @Security     BearerAuth
-// @Success      200  {object}  map[string]interface{}
-// @Failure      400  {object}  map[string]interface{}
-// @Failure      403  {object}  map[string]interface{}
-// @Failure      500  {object}  map[string]interface{}
+// @Success      200  {object}  dto.UserResponse "User deleted successfully"
+// @Failure      400  {object}  utils.ErrorResponseSwagger "Invalid request body"
+// @Failure      403  {object}  utils.ErrorResponseSwagger "Unauthorized to delete this user"
+// @Failure      500  {object}  utils.ErrorResponseSwagger "Failed to delete user"
 // @Router       /users/{id} [delete]
 func (c *UserController) DeleteUser(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))

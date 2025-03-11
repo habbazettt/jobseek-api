@@ -26,10 +26,10 @@ func NewChatController(chatService services.ChatService, notificationService ser
 // @Produce     json
 // @Param       body  body      dto.MessageRequest  true  "Message request"
 // @Security    BearerAuth
-// @Success     200   {object}  models.ChatMessage
-// @Failure     400   {object}  map[string]interface{}
-// @Failure     401   {object}  map[string]interface{}
-// @Failure     500   {object}  map[string]interface{}
+// @Success     200   {object}  models.ChatMessage "Message sent successfully"
+// @Failure     400   {object}  utils.ErrorResponseSwagger "Invalid request body"
+// @Failure     401   {object}  utils.ErrorResponseSwagger "Unauthorized: No user ID found in token"
+// @Failure     500   {object}  utils.ErrorResponseSwagger "Failed to send message"
 // @Router      /chat/send_message [post]
 func (c *ChatController) SendMessage(ctx *gin.Context) {
 	var request dto.MessageRequest
@@ -74,15 +74,14 @@ func (c *ChatController) SendMessage(ctx *gin.Context) {
 // @Param       sender_id  query     uint    false  "Sender ID"
 // @Param       receiver_id  query     uint    false  "Receiver ID"
 // @Security    BearerAuth
-// @Success     200   {object}  []models.ChatMessage
-// @Failure     400   {object}  map[string]interface{}
-// @Failure     401   {object}  map[string]interface{}
-// @Failure     500   {object}  map[string]interface{}
+// @Success     200   {object}  []models.ChatMessage "Messages retrieved successfully"
+// @Failure     400   {object}  utils.ErrorResponseSwagger "Invalid request body"
+// @Failure     401   {object}  utils.ErrorResponseSwagger "Unauthorized: No user ID found in token"
+// @Failure     500   {object}  utils.ErrorResponseSwagger "Failed to retrieve messages"
 // @Router      /chat/messages [get]
 func (c *ChatController) GetMessages(ctx *gin.Context) {
 	var senderID, receiverID *uint
 
-	// Ambil sender_id dari query jika ada
 	if senderIDParam := ctx.Query("sender_id"); senderIDParam != "" {
 		parsedID, err := strconv.Atoi(senderIDParam)
 		if err == nil {
@@ -91,7 +90,6 @@ func (c *ChatController) GetMessages(ctx *gin.Context) {
 		}
 	}
 
-	// Ambil receiver_id dari query jika ada
 	if receiverIDParam := ctx.Query("receiver_id"); receiverIDParam != "" {
 		parsedID, err := strconv.Atoi(receiverIDParam)
 		if err == nil {
@@ -100,7 +98,6 @@ func (c *ChatController) GetMessages(ctx *gin.Context) {
 		}
 	}
 
-	// Panggil service untuk mengambil pesan
 	messages, err := c.chatService.GetMessages(senderID, receiverID)
 	if err != nil {
 		utils.ErrorResponse(ctx, http.StatusInternalServerError, "Failed to retrieve messages")
@@ -110,17 +107,16 @@ func (c *ChatController) GetMessages(ctx *gin.Context) {
 	utils.SuccessResponse(ctx, http.StatusOK, "Messages retrieved successfully", messages)
 }
 
-
 // @Summary     Get My Messages
-// @Description Get messages of current user
+// @Description Get messages by current user
 // @Tags        chat
 // @Accept      json
 // @Produce     json
 // @Security    BearerAuth
-// @Success     200   {object}  []models.ChatMessage
-// @Failure     400   {object}  map[string]interface{}
-// @Failure     401   {object}  map[string]interface{}
-// @Failure     500   {object}  map[string]interface{}
+// @Success     200   {object}  []models.ChatMessage "User messages retrieved successfully"
+// @Failure     400   {object}  utils.ErrorResponseSwagger "Invalid request body"
+// @Failure     401   {object}  utils.ErrorResponseSwagger "Unauthorized: No user ID found in token"
+// @Failure     500   {object}  utils.ErrorResponseSwagger "Failed to retrieve messages"
 // @Router      /chat/my-messages [get]
 func (c *ChatController) GetMyMessages(ctx *gin.Context) {
 	userID, exists := ctx.Get("user_id")

@@ -16,12 +16,10 @@ type chatService struct {
 	chatRepo repositories.ChatRepository
 }
 
-// ✅ Constructor ChatService
 func NewChatService(chatRepo repositories.ChatRepository) ChatService {
 	return &chatService{chatRepo}
 }
 
-// ✅ Kirim pesan
 func (s *chatService) SendMessage(senderID, receiverID uint, message string) (*models.ChatMessage, error) {
 	chat := models.ChatMessage{
 		SenderID:   senderID,
@@ -37,12 +35,10 @@ func (s *chatService) SendMessage(senderID, receiverID uint, message string) (*m
 	return &chat, nil
 }
 
-// ✅ Ambil pesan antara dua user (atau semua jika filter kosong)
 func (s *chatService) GetMessages(senderID, receiverID *uint) ([]models.ChatMessage, error) {
 	return s.chatRepo.GetMessages(senderID, receiverID)
 }
 
-// ✅ Ambil semua pesan berdasarkan user_id
 func (s *chatService) GetMessagesByUser(userID uint) ([]models.ChatMessage, error) {
 	return s.chatRepo.GetMessagesByUser(userID)
 }

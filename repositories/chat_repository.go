@@ -20,17 +20,14 @@ func NewChatRepository(db *gorm.DB) ChatRepository {
 	return &chatRepository{db}
 }
 
-// ✅ Simpan pesan ke database
 func (r *chatRepository) SaveMessage(message *models.ChatMessage) error {
 	return r.db.Create(message).Error
 }
 
-// ✅ Ambil pesan berdasarkan filter (atau semua pesan jika filter kosong)
 func (r *chatRepository) GetMessages(senderID, receiverID *uint) ([]models.ChatMessage, error) {
 	var messages []models.ChatMessage
 	query := r.db.Order("created_at ASC")
 
-	// Tambahkan filter jika ada sender_id dan receiver_id
 	if senderID != nil && receiverID != nil {
 		query = query.Where("sender_id = ? AND receiver_id = ?", *senderID, *receiverID)
 	}
@@ -39,7 +36,6 @@ func (r *chatRepository) GetMessages(senderID, receiverID *uint) ([]models.ChatM
 	return messages, err
 }
 
-// ✅ Ambil semua pesan berdasarkan user_id
 func (r *chatRepository) GetMessagesByUser(userID uint) ([]models.ChatMessage, error) {
 	var messages []models.ChatMessage
 	err := r.db.
