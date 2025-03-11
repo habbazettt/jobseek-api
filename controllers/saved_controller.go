@@ -17,7 +17,19 @@ func NewSavedController(savedService services.SavedService) *SavedController {
 	return &SavedController{savedService}
 }
 
-// ✅ Simpan pekerjaan ke daftar favorit freelancer
+// @Summary      Save Job
+// @Description  Save a job to the freelancer's saved jobs. Only freelancers can perform this action.
+// @Tags         saved
+// @Accept       json
+// @Produce      json
+// @Param        job_id  path      int  true  "Job ID"
+// @Security     BearerAuth
+// @Success      201      {object}  dto.SavedJobResponse "Job saved successfully"
+// @Failure      400      {object}  utils.ErrorResponseSwagger "Invalid request body"
+// @Failure      401      {object}  utils.ErrorResponseSwagger "Unauthorized"
+// @Failure      403      {object}  utils.ErrorResponseSwagger "Forbidden: Only freelancers can save jobs"
+// @Failure      500      {object}  utils.ErrorResponseSwagger "Failed to save job"
+// @Router       /saved/jobs/{job_id} [post]
 func (c *SavedController) SaveJob(ctx *gin.Context) {
 	jobID, err := strconv.Atoi(ctx.Param("job_id"))
 	if err != nil {
@@ -43,7 +55,19 @@ func (c *SavedController) SaveJob(ctx *gin.Context) {
 	utils.SuccessResponse(ctx, http.StatusCreated, "Job saved successfully", nil)
 }
 
-// ✅ Ambil daftar pekerjaan yang disimpan oleh freelancer
+
+// @Summary      Get Saved Jobs
+// @Description  Get list of jobs saved by the freelancer. Only freelancers can perform this action.
+// @Tags         saved
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Success      200      {object}  []dto.SavedJobResponse "Jobs retrieved successfully"
+// @Failure      400      {object}  utils.ErrorResponseSwagger "Invalid request body"
+// @Failure      401      {object}  utils.ErrorResponseSwagger "Unauthorized"
+// @Failure      403      {object}  utils.ErrorResponseSwagger "Forbidden: Only freelancers can view saved jobs"
+// @Failure      500      {object}  utils.ErrorResponseSwagger "Failed to retrieve jobs"
+// @Router       /saved/jobs [get]
 func (c *SavedController) GetSavedJobs(ctx *gin.Context) {
 	freelancerID, _ := ctx.Get("user_id")
 	userRole, _ := ctx.Get("role")
@@ -63,7 +87,21 @@ func (c *SavedController) GetSavedJobs(ctx *gin.Context) {
 	utils.SuccessResponse(ctx, http.StatusOK, "Saved jobs retrieved successfully", savedJobs)
 }
 
-// ✅ Hapus pekerjaan dari daftar favorit freelancer
+
+
+// @Summary      Remove Saved Job
+// @Description  Remove a job from the freelancer's saved jobs. Only freelancers can perform this action.
+// @Tags         saved
+// @Accept       json
+// @Produce      json
+// @Param        job_id  path      int  true  "Job ID"
+// @Security     BearerAuth
+// @Success      200      {object}  dto.SavedJobResponse "Job removed from saved list successfully"
+// @Failure      400      {object}  utils.ErrorResponseSwagger "Invalid request body"
+// @Failure      401      {object}  utils.ErrorResponseSwagger "Unauthorized"
+// @Failure      403      {object}  utils.ErrorResponseSwagger "Forbidden: Only freelancers can remove saved jobs"
+// @Failure      500      {object}  utils.ErrorResponseSwagger "Failed to remove saved job"
+// @Router       /saved/jobs/{job_id} [delete]
 func (c *SavedController) RemoveSavedJob(ctx *gin.Context) {
 	jobID, err := strconv.Atoi(ctx.Param("job_id"))
 	if err != nil {
@@ -89,7 +127,22 @@ func (c *SavedController) RemoveSavedJob(ctx *gin.Context) {
 	utils.SuccessResponse(ctx, http.StatusOK, "Saved job removed successfully", nil)
 }
 
-// ✅ Simpan freelancer ke daftar favorit perusahaan
+
+// SaveFreelancer godoc
+// @Summary      Save Freelancer
+// @Description  Save a freelancer to the company's saved list. Only companies can perform this action.
+// @Tags         saved
+// @Accept       json
+// @Produce      json
+// @Param        freelancer_id  path      int  true  "Freelancer ID"
+// @Security     BearerAuth
+// @Success      201      {object}  dto.SavedFreelancerResponse "Freelancer saved successfully"
+// @Failure      400      {object}  utils.ErrorResponseSwagger "Invalid freelancer ID"
+// @Failure      401      {object}  utils.ErrorResponseSwagger "Unauthorized"
+// @Failure      403      {object}  utils.ErrorResponseSwagger "Forbidden: Only companies can save freelancers"
+// @Failure      500      {object}  utils.ErrorResponseSwagger "Failed to save freelancer"
+// @Router       /saved/freelancers/{freelancer_id} [post]
+
 func (c *SavedController) SaveFreelancer(ctx *gin.Context) {
 	freelancerID, err := strconv.Atoi(ctx.Param("freelancer_id"))
 	if err != nil {
@@ -115,7 +168,20 @@ func (c *SavedController) SaveFreelancer(ctx *gin.Context) {
 	utils.SuccessResponse(ctx, http.StatusCreated, "Freelancer saved successfully", nil)
 }
 
-// ✅ Ambil daftar freelancer yang disimpan oleh perusahaan
+
+// GetSavedFreelancers godoc
+// @Summary      Get Saved Freelancers
+// @Description  Get list of freelancers saved by the company. Only companies can perform this action.
+// @Tags         saved
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Success      200      {object}  []dto.SavedFreelancerResponse "Freelancers retrieved successfully"
+// @Failure      400      {object}  utils.ErrorResponseSwagger "Invalid request body"
+// @Failure      401      {object}  utils.ErrorResponseSwagger "Unauthorized"
+// @Failure      403      {object}  utils.ErrorResponseSwagger "Forbidden: Only companies can view saved freelancers"
+// @Failure      500      {object}  utils.ErrorResponseSwagger "Failed to retrieve freelancers"
+// @Router       /saved/freelancers [get]
 func (c *SavedController) GetSavedFreelancers(ctx *gin.Context) {
 	companyID, _ := ctx.Get("user_id")
 	userRole, _ := ctx.Get("role")
@@ -135,7 +201,21 @@ func (c *SavedController) GetSavedFreelancers(ctx *gin.Context) {
 	utils.SuccessResponse(ctx, http.StatusOK, "Saved freelancers retrieved successfully", savedFreelancers)
 }
 
-// ✅ Hapus freelancer dari daftar favorit perusahaan
+
+// RemoveSavedFreelancer godoc
+// @Summary      Remove Saved Freelancer
+// @Description  Remove a freelancer from the company's saved freelancers. Only companies can perform this action.
+// @Tags         saved
+// @Accept       json
+// @Produce      json
+// @Param        freelancer_id  path      int  true  "Freelancer ID"
+// @Security     BearerAuth
+// @Success      200      {object}  dto.SavedFreelancerResponse "Freelancer removed from saved list successfully"
+// @Failure      400      {object}  utils.ErrorResponseSwagger "Invalid request body"
+// @Failure      401      {object}  utils.ErrorResponseSwagger "Unauthorized"
+// @Failure      403      {object}  utils.ErrorResponseSwagger "Forbidden: Only companies can remove saved freelancers"
+// @Failure      500      {object}  utils.ErrorResponseSwagger "Failed to remove saved freelancer"
+// @Router       /saved/freelancers/{freelancer_id} [delete]
 func (c *SavedController) RemoveSavedFreelancer(ctx *gin.Context) {
 	freelancerID, err := strconv.Atoi(ctx.Param("freelancer_id"))
 	if err != nil {

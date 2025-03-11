@@ -6,7 +6,6 @@ import (
 	"github.com/habbazettt/jobseek-go/utils"
 )
 
-// RegisterRequest digunakan untuk validasi input saat registrasi
 type RegisterRequest struct {
 	FullName  string `json:"full_name" binding:"required,min=3,max=100"`
 	Email     string `json:"email" binding:"required,email"`
@@ -16,13 +15,11 @@ type RegisterRequest struct {
 	AvatarURL string `json:"avatar_url,omitempty"`
 }
 
-// LoginRequest digunakan untuk validasi input saat login
 type LoginRequest struct {
 	Email    string `json:"email" binding:"required,email"`
 	Password string `json:"password" binding:"required"`
 }
 
-// UserResponse digunakan untuk menampilkan data user tanpa password
 type UserResponse struct {
 	ID        uint      `json:"id"`
 	FullName  string    `json:"full_name"`
@@ -34,7 +31,6 @@ type UserResponse struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
-// LoginResponse digunakan untuk response login yang lebih terstruktur
 type LoginResponse struct {
 	Status  string       `json:"status"`
 	Message string       `json:"message"`
@@ -42,7 +38,6 @@ type LoginResponse struct {
 	Token   string       `json:"token"`
 }
 
-// Init validator saat aplikasi berjalan
 func init() {
 	utils.InitValidator()
 }

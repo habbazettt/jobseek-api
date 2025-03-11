@@ -11,6 +11,7 @@ import (
 	"github.com/habbazettt/jobseek-go/repositories"
 	"github.com/habbazettt/jobseek-go/routes"
 	"github.com/habbazettt/jobseek-go/services"
+	"github.com/habbazettt/jobseek-go/websocketgo"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
@@ -30,6 +31,11 @@ func main() {
 
 	r := gin.Default()
 	r.Use(gin.Recovery())
+
+	go func() {
+		fmt.Println("🟢 WebSocket server running...")
+		websocketgo.HubInstance.Run()
+	}()
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
@@ -56,13 +62,13 @@ func main() {
 	routes.AuthRoutes(r)
 	routes.JobRoutes(r, db)
 	routes.UserRoutes(r, db)
-	routes.ChatRoutes(r, chatController)
+	routes.ChatRoutes(r, chatController, chatService)
 	routes.NotificationRoutes(r, notificationController)
 	routes.ProposalRoutes(r, proposalController)
 	routes.ReviewRoutes(r, reviewController)
 	routes.SavedRoutes(r, savedController)
 
 	port := "8080"
-	fmt.Printf("Server running on port %s\n", port)
+	fmt.Printf("🚀 Server running on port %s\n", port)
 	log.Fatal(r.Run(":" + port))
 }

@@ -2,7 +2,6 @@ package dto
 
 import "time"
 
-// ✅ Request untuk mengajukan proposal
 type CreateProposalRequest struct {
 	JobID       uint   `json:"job_id" binding:"required"`
 	CoverLetter string `json:"cover_letter" binding:"required,min=10"`
@@ -10,12 +9,10 @@ type CreateProposalRequest struct {
 	Currency    string `json:"currency" binding:"required,oneof=IDR USD EUR"`
 }
 
-// ✅ Request untuk memperbarui status proposal (hanya perusahaan yang bisa)
 type UpdateProposalStatusRequest struct {
 	Status string `json:"status" binding:"required,oneof=pending accepted rejected"`
 }
 
-// ✅ Response untuk menampilkan data proposal
 type ProposalResponse struct {
 	ID           uint      `json:"id"`
 	JobID        uint      `json:"job_id"`

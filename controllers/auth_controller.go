@@ -19,9 +19,9 @@ import (
 // @Accept  json
 // @Produce  json
 // @Param request body dto.RegisterRequest true "Register request"
-// @Success 201 {object} dto.UserResponse
-// @Failure 400 {object} map[string]interface{}
-// @Failure 500 {object} map[string]interface{}
+// @Success 201 {object} dto.UserResponse "User registered successfully"
+// @Failure 400 {object} utils.ErrorResponseSwagger "Invalid request format"
+// @Failure 500 {object} utils.ErrorResponseSwagger "Error saving user"
 // @Router /auth/register [post]
 func RegisterUser(c *gin.Context) {
 	var request dto.RegisterRequest
@@ -91,10 +91,10 @@ func RegisterUser(c *gin.Context) {
 // @Accept  json
 // @Produce  json
 // @Param request body dto.LoginRequest true "Login request"
-// @Success 200 {object} dto.LoginResponse
-// @Failure 400 {object} map[string]interface{}
-// @Failure 401 {object} map[string]interface{}
-// @Failure 500 {object} map[string]interface{}
+// @Success 200 {object} dto.LoginResponse "User logged in successfully"
+// @Failure 400 {object} utils.ErrorResponseSwagger "Invalid request"
+// @Failure 401 {object} utils.ErrorResponseSwagger "Invalid email or password"
+// @Failure 500 {object} utils.ErrorResponseSwagger "Failed to login user"
 // @Router /auth/login [post]
 func LoginUser(c *gin.Context) {
 	var request dto.LoginRequest

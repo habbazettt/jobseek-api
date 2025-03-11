@@ -24,12 +24,11 @@ func NewJobController(jobService services.JobService) *JobController {
 // @Accept  json
 // @Produce  json
 // @Param   body  body      dto.JobRequest  true  "Job request"
-// @Security BearerAuth
-// @Success 201 {object} dto.JobResponse
-// @Failure 400 {object} map[string]interface{}
-// @Failure 401 {object} map[string]interface{}
-// @Failure 403 {object} map[string]interface{}
-// @Failure 500 {object} map[string]interface{}
+// @Success 201 {object} dto.JobResponse "Job created successfully"
+// @Failure 400 {object} utils.ErrorResponseSwagger "Invalid request body"
+// @Failure 401 {object} utils.ErrorResponseSwagger "Unauthorized"
+// @Failure 403 {object} utils.ErrorResponseSwagger "Only companies can create jobs"
+// @Failure 500 {object} utils.ErrorResponseSwagger "Failed to create job"
 // @Router /jobs [post]
 func (c *JobController) CreateJob(ctx *gin.Context) {
 	var request dto.JobRequest
@@ -74,9 +73,9 @@ func (c *JobController) CreateJob(ctx *gin.Context) {
 // @Param   min_salary     query     int     false "Minimum salary"
 // @Param   max_salary     query     int     false "Maximum salary"
 // @Security BearerAuth
-// @Success 200 {object} dto.JobResponse
-// @Failure 400 {object} map[string]interface{}
-// @Failure 500 {object} map[string]interface{}
+// @Success 200 {object} dto.JobResponse "Jobs retrieved successfully"
+// @Failure 400 {object} utils.ErrorResponseSwagger "Invalid query parameters"
+// @Failure 500 {object} utils.ErrorResponseSwagger "Failed to retrieve jobs"
 // @Router /jobs [get]
 func (c *JobController) GetJobs(ctx *gin.Context) {
 	var filters dto.JobFilterRequest
@@ -101,9 +100,10 @@ func (c *JobController) GetJobs(ctx *gin.Context) {
 // @Produce  json
 // @Param   id   path      int  true  "Job ID"
 // @Security BearerAuth
-// @Success 200 {object} dto.JobResponse
-// @Failure 400 {object} map[string]interface{}
-// @Failure 404 {object} map[string]interface{}
+// @Success 200 {object} dto.JobResponse "Job retrieved successfully"
+// @Failure 400 {object} utils.ErrorResponseSwagger "Invalid job ID"
+// @Failure 404 {object} utils.ErrorResponseSwagger "Job not found"
+// @Failure 500 {object} utils.ErrorResponseSwagger "Failed to retrieve job"
 // @Router /jobs/{id} [get]
 func (c *JobController) GetJobByID(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
@@ -131,11 +131,11 @@ func (c *JobController) GetJobByID(ctx *gin.Context) {
 // @Param   id   path      int  true  "Job ID"
 // @Param   body  body      dto.UpdateJobRequest  true  "Job request"
 // @Security BearerAuth
-// @Success 200 {object} dto.JobResponse
-// @Failure 400 {object} map[string]interface{}
-// @Failure 401 {object} map[string]interface{}
-// @Failure 403 {object} map[string]interface{}
-// @Failure 500 {object} map[string]interface{}
+// @Success 200 {object} dto.JobResponse "Job updated successfully"
+// @Failure 400 {object} utils.ErrorResponseSwagger "Invalid request body"
+// @Failure 401 {object} utils.ErrorResponseSwagger "Unauthorized"
+// @Failure 403 {object} utils.ErrorResponseSwagger "Only companies can update jobs"
+// @Failure 500 {object} utils.ErrorResponseSwagger "Failed to update job"
 // @Router /jobs/{id} [put]
 func (c *JobController) UpdateJob(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
@@ -175,10 +175,10 @@ func (c *JobController) UpdateJob(ctx *gin.Context) {
 // @Produce      json
 // @Param        id   path      int  true  "Job ID"
 // @Security     BearerAuth
-// @Success      200  {object}  map[string]interface{}
-// @Failure      400  {object}  map[string]interface{}
-// @Failure      403  {object}  map[string]interface{}
-// @Failure      500  {object}  map[string]interface{}
+// @Success      200  {object}  dto.JobResponse "Job deleted successfully"
+// @Failure      400  {object}  utils.ErrorResponseSwagger "Invalid job ID"
+// @Failure      403  {object}  utils.ErrorResponseSwagger "Forbidden: Only companies can delete jobs"
+// @Failure      500  {object}  utils.ErrorResponseSwagger "Failed to delete job"
 // @Router       /jobs/{id} [delete]
 func (c *JobController) DeleteJob(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
